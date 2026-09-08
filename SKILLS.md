@@ -125,9 +125,11 @@ the clamp fires in normal motion, or safety rejects repeatedly.
   adjust, and resume only after the pose looks right.
 - Do not impose a safety boundary of your own on the motion; the operator
   decides whether one is needed.
-- The object is identified by the operator: a single tap on the head-camera
-  image at the start of the task. Locate the object from that tap; do not
-  guess from a stale image.
+- Find the object yourself first: locate it in the current head-camera image
+  from the task description and show the operator what you found. Ask the
+  operator for a single tap on the head-camera image only when you cannot find
+  it. Either way, locate the object from the current image; do not guess from
+  a stale one.
 - The object will be moved. Whatever you build must adapt to a placement it
   has not seen — for example the object placed at either end of the reachable area — by
   measuring where the object is now and computing how much to move, not by
