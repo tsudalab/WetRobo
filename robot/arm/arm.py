@@ -1,3 +1,4 @@
+import os
 import time
 import struct
 import json
@@ -17,12 +18,15 @@ from piperlib import (
     JointState,
     Gain,
 )
+from robot.arm.ik_continuity import joint_target_is_continuous
+from robot.arm.home import physical_home_q
 from robot.arm.ik_solver import SingleArmIK
 
 # =========================
 # Dynamixel constants
 # =========================
-DXL_PORT = "/dev/ttyUSB0"
+DXL_PORT_ENV = "ROBOT_DYNAMIXEL_PORT"
+DXL_BY_ID_GLOB = "usb-FTDI_USB__-__Serial_Converter_*-if00-port0"
 DXL_BAUDRATE = 115200
 DXL_PROTOCOL_VERSION = 2.0
 
@@ -51,15 +55,39 @@ class _SharedDynamixelPort:
     @classmethod
     def get(cls):
         if cls._instance is None:
-            port = PortHandler(DXL_PORT)
+            port_name = _resolve_dynamixel_port()
+            port = PortHandler(port_name)
             if not port.openPort():
-                raise RuntimeError(f"Failed to open {DXL_PORT}")
+                raise RuntimeError(f"Failed to open {port_name}")
             if not port.setBaudRate(DXL_BAUDRATE):
                 raise RuntimeError("Failed to set Dynamixel baudrate")
             packet = PacketHandler(DXL_PROTOCOL_VERSION)
             cls._instance = (port, packet)
-            print(f"[Gripper] Shared Dynamixel port opened: {DXL_PORT}")
+            print(f"[Gripper] Shared Dynamixel port opened: {port_name}")
         return cls._instance
+
+
+def _resolve_dynamixel_port() -> str:
+    """Resolve the gripper adapter without relying on ttyUSB enumeration order."""
+    configured = os.environ.get(DXL_PORT_ENV)
+    if configured:
+        return configured
+
+    by_id = Path("/dev/serial/by-id")
+    candidates = sorted(by_id.glob(DXL_BY_ID_GLOB)) if by_id.exists() else []
+    if len(candidates) == 1:
+        return str(candidates[0])
+    if len(candidates) > 1:
+        raise RuntimeError(
+            f"Multiple Dynamixel adapters found: {candidates}; set {DXL_PORT_ENV}"
+        )
+
+    tty_candidates = sorted(Path("/dev").glob("ttyUSB*"))
+    if len(tty_candidates) == 1:
+        return str(tty_candidates[0])
+    raise RuntimeError(
+        f"Could not identify the Dynamixel adapter; set {DXL_PORT_ENV}"
+    )
 
 
 def _read_pos(packet, port, dxl_id):
@@ -143,6 +171,7 @@ class ArmNode:
         _HERE = Path(__file__).parent
         self.can_port = can_port
         self.is_left_arm = is_left_arm
+        self._last_ik_warning_time = 0.0
 
         if urdf_path is None:
             if is_left_arm:
@@ -177,11 +206,11 @@ class ArmNode:
         if is_left_arm:
             joint_names = [f"right_arm_joint{i}" for i in range(1, 7)]
             ee_frame = "right_arm_ee"
-            self.home_q = np.array([0.0, 1.58, -0.58, 0.0, -0.91, 1.40])
+            self.home_q = physical_home_q("left")
         else:
             joint_names = [f"left_arm_joint{i}" for i in range(1, 7)]
             ee_frame = "left_arm_ee"
-            self.home_q = np.array([0.0, 1.58, -0.58, 0.0, -0.91, 2.35])
+            self.home_q = physical_home_q("right")
 
         self.ik_solver = SingleArmIK(
             mjcf_path,
@@ -190,10 +219,21 @@ class ArmNode:
             ee_frame=ee_frame,
         )
 
-    def init(self):
-        self.reset()
+    def init(self, reset: bool = True):
+        if reset:
+            self.reset()
         q = self.piper.get_joint_state().pos
         self.ik_solver.init(q)
+        if not reset:
+            # PiperJointController starts in damping mode (kp=0). Its normal
+            # reset_to_home() path enables position gains, but that path also
+            # moves the arm. The controller already latched the measured joint
+            # state as its fixed command during construction, so enabling the
+            # configured gains here holds the current pose without a home move.
+            self.piper.set_gain(Gain(
+                self.controller_config.default_kp,
+                self.controller_config.default_kd,
+            ))
 
     def reset(self):
         self.piper.reset_to_home()
@@ -219,13 +259,40 @@ class ArmNode:
             self.gripper.set_open_ratio(gripper_target)
 
     def set_ee_target(self, ee_target, gripper_target=None, preview_time=0.01):
-        qd, _ = self.ik_solver.solve_ik(ee_target)
+        # Solve from measured joints, not from the previous requested target.
+        # This keeps repeated small Cartesian corrections on the same IK branch.
+        current_q = np.asarray(self.get_joint_positions(), dtype=float)
+        self.ik_solver.update_configuration(current_q)
+        qd, is_solved = self.ik_solver.solve_ik(ee_target, max_iter=30)
+        continuous, delta = joint_target_is_continuous(current_q, qd)
+        if not continuous:
+            print(
+                f"[IK] discontinuous target rejected: "
+                f"max_delta={np.max(np.abs(delta)):.3f}rad",
+                flush=True,
+            )
+            return False
+        # Interactive teleoperation historically streamed the continuous
+        # best-effort iterate even when Mink had not yet reached its strict
+        # 1 mm / 0.001 rad convergence threshold.  Rejecting every such
+        # iterate made a healthy arm appear disconnected: the controller
+        # received no joint command at all.  Preserve the established teleop
+        # behavior while retaining the branch-jump rejection above.
+        now = time.monotonic()
+        if not is_solved and now - self._last_ik_warning_time >= 1.0:
+            print(
+                "[IK] target not fully converged; streaming continuous "
+                "best-effort target",
+                flush=True,
+            )
+            self._last_ik_warning_time = now
         cmd = JointState(self.robot_config.joint_dof)
         cmd.pos = qd
         cmd.timestamp = self.piper.get_timestamp() + preview_time
         self.piper.set_joint_cmd(cmd)
         if gripper_target is not None and self.gripper is not None:
             self.gripper.set_open_ratio(gripper_target)
+        return True
 
     def open_gripper(self):
         if self.gripper is not None:
@@ -240,6 +307,10 @@ class ArmNode:
 
     def get_joint_positions(self):
         return self.piper.get_joint_state().pos
+
+    def get_joint_torque(self):
+        """Return the latest measured joint torques from the Piper controller."""
+        return np.asarray(self.piper.get_joint_state().torque, dtype=float).copy()
 
     def get_ee_pose(self):
         q = self.get_joint_positions()
