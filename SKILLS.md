@@ -120,6 +120,14 @@ the clamp fires in normal motion, or safety rejects repeatedly.
 
 ## Operating rules
 
+- Start every task from the arm's home position. The home position differs
+  between laboratories: measure it on this robot (`robot/arm/home.py` holds the
+  previous one) and do not assume the previous lab's joint values.
+- Keep the gripper level: the jaws stay horizontal through the approach, the
+  grasp, and the transport unless the task itself requires a tilt.
+- You are encouraged to import and use new tools — Python packages, models,
+  and methods you find on the internet included. Nothing limits you to what
+  this repository already imports.
 - Implement everything as code in this repository. Measuring the object,
   deciding the motion, checking the result — each runs from a script that can
   be re-run without you. A step done by hand in a shell, or a number typed in
