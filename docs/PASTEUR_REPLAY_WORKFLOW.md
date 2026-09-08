@@ -497,6 +497,18 @@ head image; do not use a frame in which an arm hides the mark. After both
 endpoints are confirmed, run the same command without `--calibrate-endpoint`
 to create the current target plan.
 
+## Incubator door
+
+The recessed incubator handle uses a separate, restartable demo-retargeting
+pipeline.  In particular, black claw-shaped image regions are treated as
+lighting shadows, never as gripper geometry.  Current door yaw comes from a
+multi-frame RGB-D plane fit, followed by right-camera rigid-parent alignment,
+stable-aperture close verification, a 5 mm proof pull, and a slow checkpointed
+open.  The normal open/close sequence is now executable without a Codex
+feedback loop through `src/run_incubator_door_autonomy.py`; unknown endpoint
+evidence stops rather than guessing or repeating a push.  See
+[PASTEUR_INCUBATOR_DOOR.md](PASTEUR_INCUBATOR_DOOR.md).
+
 ## Regression check — DO THIS FIRST, before any real task
 
 The live path now includes calibrated torque monitoring and marker-anchored
