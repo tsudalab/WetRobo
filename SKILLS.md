@@ -12,7 +12,7 @@ automated biological research. The environment is four things:
 |---|---|
 | Skill | this file: the rules and the starting workflow |
 | Code exemplar | branch `wetrobo+petri+cap+door`: the repository as it stood after a coding agent evolved the base stack through the Petri dish lid, bottle cap, and incubator door trials — an example of what a finished policy in this environment looks like, not a fixed policy to run |
-| Arm | one Piper arm with a gripper, plus a head camera looking at the workspace |
+| Arm | one Piper arm with a gripper, plus the cameras on the robot: a head camera looking at the workspace and the wrist cameras (`robot/camera_map.json`) |
 | Incubator | a laboratory incubator in front of the arm; the tasks act on it and on objects placed at it |
 
 The `main` branch of this repository, `wetrobo`, is the base control stack
@@ -120,6 +120,14 @@ the clamp fires in normal motion, or safety rejects repeatedly.
 
 ## Operating rules
 
+- Implement everything as code in this repository. Measuring the object,
+  deciding the motion, checking the result — each runs from a script that can
+  be re-run without you. A step done by hand in a shell, or a number typed in
+  from an image, is not part of the policy.
+- Use every camera available on the robot, not only the head camera. Read
+  `robot/camera_map.json` for the cameras on this host and use the wrist
+  cameras for what the head camera cannot see: the gap between the jaws, the
+  height above the bench, contact.
 - Lab work is not in a hurry. Stop at the point that matters — where the
   gripper is about to touch the object — show the operator the camera images,
   adjust, and resume only after the pose looks right.
