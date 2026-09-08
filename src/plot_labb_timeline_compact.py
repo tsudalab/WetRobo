@@ -112,11 +112,11 @@ def main():
         ax=fig.add_axes([.037+i*.243,.735,.229,.205])
         ax.imshow(plt.imread(p)); ax.axis('off'); ax.set_title(label,loc='left',fontsize=14,pad=12)
         image_axes.append(ax)
-    gs=fig.add_gridspec(5,1,left=.22,right=.97,top=.685,bottom=.04,height_ratios=[3.4,1.2,1.2,1.2,1.2],hspace=.28)
+    gs=fig.add_gridspec(5,1,left=.22,right=.97,top=.685,bottom=.10,height_ratios=[1.7,1.2,1.2,1.2,1.2],hspace=.28)
     axes=[fig.add_subplot(gs[i]) for i in [1,2,3,4,0]]
     clocks=['21:15:00','21:20:00','21:25:00','21:30:00','21:35:00','21:40:00','21:45:00','21:50:00','21:55:00','22:00:00']
     for ax in axes:
-        ax.set_xlim(0,x(end)); ax.set_xticks([at(t) for t in clocks]); ax.tick_params(axis='x',labelbottom=False,bottom=False)
+        ax.set_xlim(0,x(end)); ax.set_xticks(np.arange(0,49,5)); ax.tick_params(axis='x',labelbottom=False,bottom=False)
         ax.grid(axis='x',color='#e3e8ed',lw=.7)
     sparse=[r for r in audit if r.get('before') and 'gripper_effort_Nm' in r['before'] and stamp(r)<times[0]]
     axes[0].scatter([x(stamp(r)) for r in sparse],[r['before']['gripper_effort_Nm'] for r in sparse],s=12,color='#b84364',label='Pre-command samples')
@@ -164,6 +164,8 @@ def main():
     axes[3].step(tx,[r['total_tokens']/1e6 for r in metrics['tokens']],where='post',color='#795a9b',lw=1.5)
     axes[3].set_ylabel('Tokens\n(million)'); axes[3].set_ylim(0,28)
     axes[3].set_yticks([0,10,20])
+    axes[3].tick_params(axis='x',labelbottom=True,bottom=True)
+    axes[3].set_xlabel('Elapsed time (min)',fontsize=9,labelpad=16)
     ax=axes[4]; ax.set_ylim(-.6,.6); ax.set_yticks([0],['Operation'])
     spans=[
         ('21:11:17','21:15:23',0,'Inspection','#edf0f4'),
@@ -179,11 +181,18 @@ def main():
         ('21:55:33','21:57:22',0,'Grasp','#f1dce4'),
         ('21:57:22','21:58:47',0,'Rotation','#e5dff0'),
         ('21:58:47','22:00:00',0,'Lift','#deece3')]
+    operation_text=[]
+    wrapped={'Inspection':'Inspec-\ntion','Calibration':'Cali-\nbration',
+             'Approach':'Ap-\nproach','Alignment':'Align-\nment',
+             'Grasp attempts':'Grasp\nattempts','Reorientation':'Re-\norient-\nation',
+             'Rotation':'Rot-\nation'}
     for a,b,y,label,color in spans:
         ax.barh(y,at(b)-at(a),left=at(a),height=.74,color=color,edgecolor='white')
-        # Narrow phases need a separate label height to keep doubled text apart.
-        label_y=.40 if label=='Retreat' else 0
-        ax.text((at(a)+at(b))/2,label_y,label,ha='center',va='center',fontsize=9,rotation=90)
+        label_y=.48 if label=='Retreat' else 0
+        text=ax.text((at(a)+at(b))/2,label_y,wrapped.get(label,label),ha='center',va='center',fontsize=9)
+        if label=='Retreat':
+            ax.plot([(at(a)+at(b))/2]*2,[.24,.39],color='#847b68',lw=1)
+        operation_text.append((text,at(b)-at(a),label=='Retreat'))
     for axis in axes:
         axis.yaxis.label.set_fontsize(9)
         axis.yaxis.label.set_rotation(0)
@@ -207,6 +216,15 @@ def main():
     from matplotlib.text import Text
     for text in fig.findobj(match=Text):
         text.set_fontsize(text.get_fontsize()*4)
+    fig.canvas.draw()
+    renderer=fig.canvas.get_renderer()
+    for text,width,callout in operation_text:
+        if callout:
+            text.set_fontsize(24)
+            continue
+        available=axes[4].bbox.width*width/x(end)*.92
+        measured=text.get_window_extent(renderer=renderer).width
+        text.set_fontsize(min(text.get_fontsize(),text.get_fontsize()*available/max(1,measured)))
     output=BASE/'timeline_pressure_tool_changes.png'
     fig.savefig(output,dpi=160,facecolor='white'); plt.close(fig)
     report={'images':[{'path':str(p.relative_to(ROOT)),'label':label} for p,label in images],
