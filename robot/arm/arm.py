@@ -6,6 +6,7 @@ import numpy as np
 from typing import Optional
 from pathlib import Path
 import mink
+import can
 from dynamixel_sdk import (
     PortHandler,
     PacketHandler,
@@ -18,6 +19,7 @@ from piperlib import (
     JointState,
     Gain,
 )
+from piper_sdk import C_PiperInterface_V2
 from robot.arm.ik_continuity import joint_target_is_continuous
 from robot.arm.home import physical_home_q
 from robot.arm.ik_solver import SingleArmIK
@@ -47,6 +49,12 @@ DXL_ID_RIGHT = 1
 DXL_ID_LEFT = 2
 
 LEFT_CAL_FILE = Path(__file__).parent / "left_gripper_cal.json"
+
+# PiperJointController expresses the native gripper opening in degrees.  The
+# configured Piper gripper width is 22 degrees; open is the negative direction.
+PIPER_GRIPPER_MAX_TRAVEL_UM = 70000
+PIPER_GRIPPER_COMMAND_EFFORT = 1000
+PIPER_GRIPPER_FEEDBACK_CAN_ID = 0x2A8
 
 
 class _SharedDynamixelPort:
@@ -158,6 +166,82 @@ class DynamixelGripper:
         )
 
 
+class PiperNativeGripper:
+    """Piper's CAN gripper, commanded by PiperJointController.
+
+    The controller remains the sole command source.  A second, receive-only
+    piper_sdk interface listens to the CAN feedback frame so callers can log
+    the measured gripper effort.
+    """
+
+    def __init__(self, piper, can_port: str, command_interface=None, feedback_bus=None):
+        self.piper = piper
+        self.target_ratio = 1.0
+        self.command = command_interface or C_PiperInterface_V2(
+            can_name=can_port, can_auto_init=True
+        )
+        self.feedback_bus = feedback_bus or can.interface.Bus(
+            channel=can_port,
+            interface="socketcan",
+            can_filters=[{
+                "can_id": PIPER_GRIPPER_FEEDBACK_CAN_ID,
+                "can_mask": 0x7FF,
+            }],
+        )
+        self._last_feedback = None
+
+    def apply_to_joint_command(self, cmd):
+        """Native gripper is commanded separately; do not alter arm commands."""
+
+    def set_open_ratio(self, ratio: float):
+        ratio = float(np.clip(ratio, 0.0, 1.0))
+        self.target_ratio = ratio
+        self.command.GripperCtrl(
+            gripper_angle=int(round(ratio * PIPER_GRIPPER_MAX_TRAVEL_UM)),
+            gripper_effort=PIPER_GRIPPER_COMMAND_EFFORT,
+            gripper_code=1,
+            set_zero=0,
+        )
+
+    def _read_feedback(self):
+        message = self.feedback_bus.recv(timeout=0.1)
+        if message is not None:
+            self._last_feedback = message
+            while True:
+                newer = self.feedback_bus.recv(timeout=0.0)
+                if newer is None:
+                    break
+                self._last_feedback = newer
+        if self._last_feedback is None:
+            raise RuntimeError("no Piper gripper feedback received on CAN")
+        data = bytes(self._last_feedback.data)
+        if len(data) < 7:
+            raise RuntimeError(f"short Piper gripper feedback frame: {len(data)} bytes")
+        return {
+            "travel_um": int.from_bytes(data[0:4], "big", signed=True),
+            "effort_mNm": int.from_bytes(data[4:6], "big", signed=True),
+            "status": data[6],
+        }
+
+    def get_open_ratio(self) -> float:
+        travel_um = self._read_feedback()["travel_um"]
+        return float(np.clip(travel_um / PIPER_GRIPPER_MAX_TRAVEL_UM, 0.0, 1.0))
+
+    def get_effort(self) -> float:
+        """Return measured gripper effort in N m (feedback unit is 0.001 N m)."""
+        return float(self._read_feedback()["effort_mNm"]) * 0.001
+
+    def close(self):
+        self.set_open_ratio(0.0)
+
+    def open(self):
+        self.set_open_ratio(1.0)
+
+    def stop(self):
+        self.feedback_bus.shutdown()
+        self.command.DisconnectPort()
+
+
 class ArmNode:
     def __init__(
         self,
@@ -199,7 +283,7 @@ class ArmNode:
             if is_left_arm:
                 self.gripper = DynamixelGripper(dxl_id=DXL_ID_LEFT, inverted=False)
             else:
-                self.gripper = DynamixelGripper(dxl_id=DXL_ID_RIGHT, inverted=False)
+                self.gripper = PiperNativeGripper(self.piper, can_port)
         else:
             self.gripper = None
 
@@ -254,6 +338,8 @@ class ArmNode:
         cmd = JointState(self.robot_config.joint_dof)
         cmd.pos = joint_target
         cmd.timestamp = self.piper.get_timestamp() + preview_time
+        if isinstance(self.gripper, PiperNativeGripper):
+            self.gripper.apply_to_joint_command(cmd)
         self.piper.set_joint_cmd(cmd)
         if gripper_target is not None and self.gripper is not None:
             self.gripper.set_open_ratio(gripper_target)
@@ -289,6 +375,8 @@ class ArmNode:
         cmd = JointState(self.robot_config.joint_dof)
         cmd.pos = qd
         cmd.timestamp = self.piper.get_timestamp() + preview_time
+        if isinstance(self.gripper, PiperNativeGripper):
+            self.gripper.apply_to_joint_command(cmd)
         self.piper.set_joint_cmd(cmd)
         if gripper_target is not None and self.gripper is not None:
             self.gripper.set_open_ratio(gripper_target)
@@ -311,6 +399,11 @@ class ArmNode:
     def get_joint_torque(self):
         """Return the latest measured joint torques from the Piper controller."""
         return np.asarray(self.piper.get_joint_state().torque, dtype=float).copy()
+
+    def get_gripper_effort(self) -> float:
+        if self.gripper is None or not hasattr(self.gripper, "get_effort"):
+            raise RuntimeError("gripper effort feedback is unavailable")
+        return self.gripper.get_effort()
 
     def get_ee_pose(self):
         q = self.get_joint_positions()

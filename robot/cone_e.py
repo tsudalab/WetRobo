@@ -197,6 +197,11 @@ class ConeE:
             return self.right_arm.gripper.get_open_ratio()
         return 0.0
 
+    @require_initialization
+    def get_right_gripper_effort(self) -> float:
+        """Return Piper native gripper effort in N m."""
+        return self.right_arm.get_gripper_effort()
+
     # ----------------------------------------------------------------------
     # Rest positions (for rollout controller 'h' key)
     # ----------------------------------------------------------------------

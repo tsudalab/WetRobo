@@ -16,7 +16,12 @@ import numpy as np
 
 
 PHYSICAL_LEFT_HOME_Q = (0.0, 1.58, -0.58, 0.0, -0.91, 1.40)
-PHYSICAL_RIGHT_HOME_Q = (0.0, 1.58, -0.58, 0.0, -0.91, 2.35)
+
+# Piper's native right-gripper home.  Keep the manufacturer's joint values
+# exact here: the previous 2.35-rad wrist roll was the nearly-pi-flipped home
+# used by the former gripper setup.  The native gripper is horizontal at the
+# Piper convention of -0.78 rad.
+PHYSICAL_RIGHT_HOME_Q = (0.0, 1.58065, -0.578175, 0.0, -0.912, -0.78)
 
 # The semantic Piper CAD uses a common joint-6 zero for both arms, while the
 # physical arms report different wrist-roll zeros.  PCA of the pinned NYU mesh

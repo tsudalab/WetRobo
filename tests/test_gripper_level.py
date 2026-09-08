@@ -35,6 +35,21 @@ def test_saved_success_passes_and_bad_low_pose_fails():
     assert bad.tip_height_difference_m > 0.025
 
 
+def test_native_piper_right_home_is_horizontal_with_reversed_plane_normal():
+    fk = ProductionRightFK(MODEL)
+    home_q = physical_home_q("right")
+    np.testing.assert_allclose(
+        home_q,
+        [0.0, 1.58065, -0.578175, 0.0, -0.912, -0.78],
+    )
+    assessment = assess_jaw_level(
+        fk.pose(home_q).parameters(), JawLevelReference()
+    )
+    assert assessment.accepted
+    assert assessment.combined_tilt_deg < 0.4
+    assert assessment.tip_height_difference_m < 0.001
+
+
 def test_leveled_pose_preserves_position_and_removes_tip_height_difference():
     fk = ProductionRightFK(MODEL)
     reference = JawLevelReference()

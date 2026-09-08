@@ -3,8 +3,9 @@
 The production EE convention is not the semantic NYU mesh convention.  For
 the physical right arm, the vector between the two open fingertips is EE
 local-Z and the finger approach direction is EE local-X.  At canonical home
-both are horizontal and EE local-Y points up.  Keep that bridge explicit so a
-semantic local-Z "up" assertion cannot silently authorize tilted hardware.
+both are horizontal; EE local-Y is the jaw-plane normal and may point up or
+down.  Keep that bridge explicit so a semantic local-Z "up" assertion cannot
+silently authorize tilted hardware.
 """
 
 from __future__ import annotations
@@ -94,8 +95,12 @@ def assess_jaw_level(
     approach_sine = float(np.clip(abs(approach @ up), 0.0, 1.0))
     tip_tilt = math.degrees(math.asin(tip_sine))
     approach_tilt = math.degrees(math.asin(approach_sine))
+    # A parallel or anti-parallel jaw-plane normal represents the same
+    # horizontal two-finger gripper plane.  Piper's native right-gripper home
+    # uses the anti-parallel convention; rejecting it would incorrectly call
+    # the manufacturer's horizontal home a 180-degree tilt.
     combined = math.degrees(
-        math.acos(float(np.clip(ee_up @ up, -1.0, 1.0)))
+        math.acos(float(np.clip(abs(ee_up @ up), 0.0, 1.0)))
     )
     height_difference = reference.open_tip_span_m * tip_sine
     maximum_tilt = (

@@ -268,6 +268,11 @@ def write_preview(
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--camera", default="head", choices=("head", "left", "right"))
+    parser.add_argument(
+        "--device-index",
+        type=int,
+        help="override camera_map.json after inspecting the live Record3D devices",
+    )
     parser.add_argument("--frames", type=int, default=30)
     parser.add_argument("--warmup-frames", type=int, default=10)
     parser.add_argument("--timeout-s", type=float, default=15.0)
@@ -349,7 +354,11 @@ def main() -> int:
 
     devices = Record3DStream.get_connected_devices()
     camera_map = load_camera_map()
-    camera_index = int(camera_map.get(args.camera, 0))
+    camera_index = (
+        int(args.device_index)
+        if args.device_index is not None
+        else int(camera_map.get(args.camera, 0))
+    )
     if camera_index >= len(devices):
         raise RuntimeError(
             f"{args.camera} index {camera_index} unavailable; found {len(devices)}"
