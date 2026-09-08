@@ -8,7 +8,7 @@ The environment is four components:
 | component | where |
 |---|---|
 | Skill | `SKILLS.md` — operating rules and the starting workflow for the agent |
-| Code exemplar | branch `wetrobo-exemplar` — the programs a coding agent evolved in this environment for three trials (Petri dish lid, culture-media bottle cap, incubator door) |
+| Code exemplar | branch `wetrobo+petri+cap+door` — the repository after a coding agent evolved it in this environment through three trials (Petri dish lid, culture-media bottle cap, incubator door) |
 | Arm | one AgileX Piper arm with a string-driven Dynamixel gripper, a fixed head RGB-D camera (iPhone via Record3D), and a wrist RGB camera |
 | Incubator | a laboratory incubator in front of the arm |
 
@@ -19,27 +19,33 @@ The task is not part of the environment; the operator gives it at run time.
 - `main` — **wetrobo**, the base control stack the agent starts from: one-demo
   replay, live bias, safety layer, camera streaming, and the arm RPC server.
   This is the tree the trials began with.
-- `wetrobo-exemplar` — `main` plus the final form of the programs the agent
-  produced for the three trials, at the paths where they run. Only files that
-  the final programs import or reference are included; intermediate attempts
-  are not.
+- `wetrobo+petri`, `wetrobo+petri+cap`, `wetrobo+petri+cap+door` — byte-exact
+  snapshots of the working repository at the end of each trial, in the order
+  the trials ran (Petri dish lid, then bottle cap, then incubator door). They
+  form a chain, so `git diff` between adjacent branches shows what one trial
+  added. `wetrobo+petri+cap+door` is the code exemplar: the final form of the
+  three task programs at the paths where they run.
 
 ## Provenance
 
-Both branches are extracted from the working repository's git history; no file
-was edited by hand except `SKILLS.md`, `README.md`, and `.gitignore`.
+All branches are extracted from the working repository's git history; no file
+was edited by hand except `SKILLS.md`, `README.md`, and `.gitignore` on `main`.
+The snapshot branches add `SKILLS.md` and a note at the end of `README.md`;
+every other file is identical to the source commit.
 
 - `main`: the tree at commit `d8a618d` (2026-07-21, "Add safe one-demo replay
   workflow"), the state the first trial started from, restricted to the control
   stack and its imports. Neural-policy inference and training scripts, unused
   simulation assets, and scratch files are omitted.
-- `wetrobo-exemplar`: the tree at commit `05ab41e` (2026-08-12, tip of `main`
-  in the trial window), plus the files that existed only in the working tree at
-  the last lid trial (2026-08-14; modification time on or before that day).
-  The set is the import closure of the three trials' entry points. The incubator
-  door files are identical to commit `283b913` (the revision measured in the
-  paper) except for one later commit, `676981b`, which adds cross-laboratory
-  appliance-frame registration.
+- `wetrobo+petri`: the tree at commit `3a1706b` (2026-08-06 11:03 JST, "Add
+  checkpointed thin-object grasp orchestration"), the last commit before the
+  bottle cap trial began.
+- `wetrobo+petri+cap`: the tree at commit `1f07761` (2026-08-06 18:37 JST,
+  "Promote verified cylindrical cap transfer").
+- `wetrobo+petri+cap+door`: the tree at commit `676981b` (2026-08-08 23:45 JST,
+  "Add cross-lab appliance frame retargeting"). The incubator door files are
+  those of commit `283b913` (the revision measured in the paper) plus this one
+  later commit, which adds cross-laboratory appliance-frame registration.
 
 ## Dependencies
 

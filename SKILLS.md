@@ -11,7 +11,7 @@ automated biological research. The environment is four things:
 | component | what it is here |
 |---|---|
 | Skill | this file: the rules and the starting workflow |
-| Code exemplar | branch `wetrobo-exemplar`: the programs a coding agent evolved from the base stack for the Petri dish lid, bottle cap, and incubator door trials — an example of what a finished policy in this environment looks like, not a fixed policy to run |
+| Code exemplar | branch `wetrobo+petri+cap+door`: the repository as it stood after a coding agent evolved the base stack through the Petri dish lid, bottle cap, and incubator door trials — an example of what a finished policy in this environment looks like, not a fixed policy to run |
 | Arm | one Piper arm with a gripper, plus a head camera looking at the workspace |
 | Incubator | a laboratory incubator in front of the arm; the tasks act on it and on objects placed at it |
 
