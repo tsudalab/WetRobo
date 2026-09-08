@@ -123,8 +123,11 @@ the clamp fires in normal motion, or safety rejects repeatedly.
 - Start every task from the arm's home position. The home position differs
   between laboratories: measure it on this robot (`robot/arm/home.py` holds the
   previous one) and do not assume the previous lab's joint values.
-- Keep the gripper level: the jaws stay horizontal through the approach, the
-  grasp, and the transport unless the task itself requires a tilt.
+- Begin by levelling the gripper at the home position: measure the jaws' tilt
+  there (wrist camera or depth) and correct the wrist until they are
+  horizontal before any approach. Then keep the gripper level: the jaws stay
+  horizontal through the approach, the grasp, and the transport unless the
+  task itself requires a tilt.
 - You are encouraged to import and use new tools — Python packages, models,
   and methods you find on the internet included. Nothing limits you to what
   this repository already imports.
