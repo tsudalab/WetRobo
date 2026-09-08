@@ -1,0 +1,252 @@
+{
+  "actual_frames": 1,
+  "callbacks_seen": 9,
+  "camera_label": "head",
+  "capture_script": {
+    "path": "src/capture_record3d_bundle.py",
+    "sha256": "c09a3b03fa4b919e21cc6fe11a027e91d31a8fecb7692a52a8c4900569330862"
+  },
+  "clock": {
+    "host_clock_mapping_end": {
+      "host_monotonic_ns": 1729929498121059,
+      "host_realtime_ns": 1788865099550821195
+    },
+    "host_clock_mapping_start": {
+      "host_monotonic_ns": 1729928859588009,
+      "host_realtime_ns": 1788865098912288137
+    },
+    "record3d_misc_timestamp_semantics": "preserved verbatim; not independently verified as sensor time"
+  },
+  "completed_at_utc": "2026-09-08T10:58:19.550797Z",
+  "created_at_utc": "2026-09-08T10:58:18.911925Z",
+  "derived_preview": {
+    "depth": {
+      "bytes": 54396,
+      "path": "derived/head_depth_landscape.png",
+      "sha256": "ccf5c7bd798b16fd9cfb0c6afef82cd372a07467f304aff3182f32d7dfefc666"
+    },
+    "rgb": {
+      "bytes": 798638,
+      "path": "derived/head_rgb_landscape.png",
+      "sha256": "d2e0475d341e84051a74f331df5dcb5b5865e5d48acc75523a68e075cb70cf6f"
+    },
+    "selected_sequence": 0
+  },
+  "device": {
+    "index": 0,
+    "product_id": 4776,
+    "record3d_device_type": 1,
+    "record3d_device_type_at_connect_uninitialized": 0,
+    "record3d_device_type_name": "LiDAR",
+    "record3d_device_type_source": "after_first_callback",
+    "udid": "00008101-0015486E1412001E"
+  },
+  "errors": [],
+  "frame_index": {
+    "bytes": 2071,
+    "path": "frames.jsonl",
+    "sha256": "4a6eaee338c10b4251753b82d155b254be2ef429b0914307c8fd0d51832635f9"
+  },
+  "orientation": {
+    "derived_preview": "90 degrees clockwise",
+    "raw": "Record3D native portrait"
+  },
+  "purpose": "after_align_x_minus_40mm",
+  "quality_summary": {
+    "confidence_high_fraction": {
+      "max": 0.83221435546875,
+      "median": 0.83221435546875,
+      "min": 0.83221435546875
+    },
+    "depth_median_m": {
+      "max": 1.1337890625,
+      "median": 1.1337890625,
+      "min": 1.1337890625
+    },
+    "depth_valid_fraction": {
+      "max": 1.0,
+      "median": 1.0,
+      "min": 1.0
+    },
+    "rgb_mean_gray": {
+      "max": 124.93456163194445,
+      "median": 124.93456163194445,
+      "min": 124.93456163194445
+    },
+    "rgb_near_black_fraction": {
+      "max": 0.018758680555555556,
+      "median": 0.018758680555555556,
+      "min": 0.018758680555555556
+    },
+    "rgb_sharpness_laplacian_var": {
+      "max": 640.3249738277148,
+      "median": 640.3249738277148,
+      "min": 640.3249738277148
+    }
+  },
+  "repository": {
+    "branch": "wetrobo+petri",
+    "commit": "2432d40414a34f51f82c7a1d58a2ca3d2bb42aa0",
+    "dirty_paths": [
+      "robot/arm/arm.py",
+      "robot/cone_e.py",
+      "src/capture_record3d_bundle.py",
+      "artifacts/",
+      "src/labb_right_cap_control.py",
+      "src/sample_record3d_depth.py",
+      "tests/test_piper_native_gripper.py"
+    ],
+    "origin": null
+  },
+  "requested_frames": 1,
+  "robot_state": {
+    "after": {
+      "errors": {},
+      "host_monotonic_ns_end": 1729929452562935,
+      "host_monotonic_ns_start": 1729929398874518,
+      "host_realtime_ns_end": 1788865099505262698,
+      "host_realtime_ns_start": 1788865099451574440,
+      "left_ee_pose": {
+        "quaternion_wxyz": [
+          0.4493839977019148,
+          0.8923983958206182,
+          0.020189209481448502,
+          0.03565840106829422
+        ],
+        "translation_xyz_m": [
+          0.4251612789622814,
+          -0.3065949769430732,
+          0.699450006137066
+        ]
+      },
+      "left_gripper_open_ratio": 1.0,
+      "left_joint_positions_rad": [
+        0.028902651742100716,
+        2.4944071769714355,
+        -1.0772521495819092,
+        -0.05351179465651512,
+        -1.313866376876831,
+        1.4366328716278076
+      ],
+      "left_joint_torque": [
+        -0.12166875014081596,
+        -1.5923250585794448,
+        -0.2268000019714236,
+        0.016293480885475872,
+        -0.7619598159956932,
+        0.02396100035704672
+      ],
+      "right_ee_pose": {
+        "quaternion_wxyz": [
+          -0.3219982509066099,
+          0.8797793012158495,
+          -0.2506366827317122,
+          -0.24389907919973666
+        ],
+        "translation_xyz_m": [
+          0.2763964690870172,
+          0.20922003926129867,
+          0.7878761977390834
+        ]
+      },
+      "right_gripper_open_ratio": 0.9914285714285714,
+      "right_joint_positions_rad": [
+        0.5674589276313782,
+        1.4059674739837646,
+        -1.0764492750167847,
+        -0.4838227331638336,
+        0.49408525228500366,
+        -0.9438915252685547
+      ],
+      "right_joint_torque": [
+        0.17482500225305556,
+        -1.3135499864816664,
+        -0.836325005069375,
+        -0.1677269971436262,
+        -0.641196388335228,
+        0.0354622804570198
+      ],
+      "source": "read_only_rpc://localhost:8081"
+    },
+    "before": {
+      "errors": {},
+      "host_monotonic_ns_end": 1729929100273868,
+      "host_monotonic_ns_start": 1729928875907831,
+      "host_realtime_ns_end": 1788865099152973256,
+      "host_realtime_ns_start": 1788865098928607851,
+      "left_ee_pose": {
+        "quaternion_wxyz": [
+          0.4493839977019148,
+          0.8923983958206182,
+          0.020189209481448502,
+          0.03565840106829422
+        ],
+        "translation_xyz_m": [
+          0.4251612789622814,
+          -0.3065949769430732,
+          0.699450006137066
+        ]
+      },
+      "left_gripper_open_ratio": 1.0,
+      "left_joint_positions_rad": [
+        0.028902651742100716,
+        2.4944071769714355,
+        -1.0772521495819092,
+        -0.05351179465651512,
+        -1.313866376876831,
+        1.4366328716278076
+      ],
+      "left_joint_torque": [
+        -0.12048749774694442,
+        -1.5911437533795831,
+        -0.219712505210191,
+        -0.0019168800910469143,
+        -0.7581260482263564,
+        0.03162851982861757
+      ],
+      "right_ee_pose": {
+        "quaternion_wxyz": [
+          -0.3219982509066099,
+          0.8797793012158495,
+          -0.2506366827317122,
+          -0.24389907919973666
+        ],
+        "translation_xyz_m": [
+          0.2763964690870172,
+          0.20922003926129867,
+          0.7878761977390834
+        ]
+      },
+      "right_gripper_open_ratio": 0.9914285714285714,
+      "right_joint_positions_rad": [
+        0.5674589276313782,
+        1.4059674739837646,
+        -1.0764492750167847,
+        -0.4838227331638336,
+        0.49408525228500366,
+        -0.9438915252685547
+      ],
+      "right_joint_torque": [
+        0.18309375140815973,
+        -1.3194562308490276,
+        -0.8457750242203473,
+        -0.16676855520129202,
+        -0.6402379035472869,
+        0.023002560199946166
+      ],
+      "source": "read_only_rpc://localhost:8081"
+    },
+    "commands_sent": false,
+    "stability": {
+      "left_max_abs_joint_delta_rad": 0.0,
+      "right_max_abs_joint_delta_rad": 0.0,
+      "stationary": true,
+      "stationary_threshold_rad": 0.005
+    }
+  },
+  "schema": "piper_robot.rgbd_capture_session",
+  "schema_version": 1,
+  "session_id": "20260908T105818.911925Z_head_after_align_x_minus_40mm_1b8bec8b",
+  "status": "complete",
+  "warmup_frames": 8
+}

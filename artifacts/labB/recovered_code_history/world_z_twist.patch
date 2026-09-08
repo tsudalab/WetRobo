@@ -1,0 +1,92 @@
+--- before.py
++++ after.py
+@@ -17,6 +17,8 @@
+ import time
+ 
+ import numpy as np
++from scipy.optimize import least_squares
++from scipy.spatial.transform import Rotation
+ 
+ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+ 
+@@ -141,6 +143,46 @@
+             "effort_Nm": float(rpc.get_right_gripper_effort()),
+         })
+     return before, state(rpc), samples
++
++
++def world_z_twist_joint_delta(q, angle_rad):
++    """Best-effort world-Z wrist twist with joint 6 held fixed."""
++    q = np.asarray(q, float)
++    solver = SingleArmIK(
++        str(MODEL),
++        joint_names=[f"left_arm_joint{i}" for i in range(1, 7)],
++        ee_frame="left_arm_ee",
++    )
++
++    def fk(active):
++        configuration = q.copy()
++        configuration[:5] = active
++        solver.update_configuration(configuration)
++        pose = solver.forward_kinematics()
++        wxyz = np.asarray(pose.rotation().wxyz, float)
++        rotation = Rotation.from_quat(np.r_[wxyz[1:], wxyz[0]])
++        return np.asarray(pose.translation(), float), rotation
++
++    solver.init(q)
++    position0, rotation0 = fk(q[:5])
++    target_rotation = Rotation.from_rotvec([0.0, 0.0, angle_rad]) * rotation0
++
++    def residual(active):
++        position, rotation = fk(active)
++        return np.r_[
++            (position - position0) / 0.003,
++            (rotation * target_rotation.inv()).as_rotvec() / 0.03,
++        ]
++
++    result = least_squares(
++        residual, q[:5], bounds=(q[:5] - 0.5, q[:5] + 0.5), max_nfev=400
++    )
++    target_position, target_rotation_actual = fk(result.x)
++    return (
++        np.r_[result.x - q[:5], 0.0],
++        (target_position - position0),
++        (target_rotation_actual * rotation0.inv()).as_rotvec(),
++    )
+ 
+ 
+ def main():
+@@ -171,6 +213,11 @@
+     grip.add_argument("--target", type=float, required=True)
+     grip.add_argument("--step", type=float, default=0.1)
+     grip.add_argument("--settle-s", type=float, default=0.4)
++    twist = sub.add_parser("twist-world-z")
++    twist.add_argument("--angle-rad", type=float, required=True)
++    twist.add_argument("--duration-s", type=float, default=8.0)
++    twist.add_argument("--rate-hz", type=float, default=20.0)
++    twist.add_argument("--torque-limits", nargs=6, type=float, default=DEFAULT_LIMIT_NM)
+     ratchet = sub.add_parser("ratchet-unscrew")
+     ratchet.add_argument("--cycles", type=int, default=1)
+     ratchet.add_argument("--release-ratio", type=float, default=0.45)
+@@ -231,6 +278,21 @@
+                 predicted_delta_xyz_m=predicted,
+                 measured_delta_xyz_m=np.asarray(after["ee_xyz_m"]) - np.asarray(before["ee_xyz_m"]),
+                 local_position_jacobian_m_per_rad=jacobian,
++                peak_abs_torque_Nm=peak,
++            )
++        elif args.command == "twist-world-z":
++            initial = state(rpc)
++            delta, predicted_position, predicted_rotation = world_z_twist_joint_delta(
++                initial["q_rad"], args.angle_rad
++            )
++            before, after, peak = move_joints(
++                rpc, delta, args.duration_s, args.rate_hz,
++                np.asarray(args.torque_limits, float),
++            )
++            record.update(
++                before=before, after=after, planned_joint_delta_rad=delta,
++                predicted_delta_xyz_m=predicted_position,
++                predicted_world_rotation_vector_rad=predicted_rotation,
+                 peak_abs_torque_Nm=peak,
+             )
+         elif args.command == "ratchet-unscrew":

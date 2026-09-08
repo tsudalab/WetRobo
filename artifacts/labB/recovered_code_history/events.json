@@ -1,0 +1,28 @@
+[
+  {
+    "event": "wrist_hold",
+    "confirmed_by_local_time": "21:53:03.230742",
+    "added": 9,
+    "deleted": 6,
+    "net": 3,
+    "before_lines": 287,
+    "after_lines": 290,
+    "before_sha256": "8c57c44277167533dcb3317701847d78ca0549bb688aa49c8b252760e4d011e9",
+    "after_sha256": "4d0396a5742eae03a5d6bca3da61b5903e637dae299dc00f9899bcfd4cb55903",
+    "source": "Literal apply_patch operations in this conversation; reversed against unchanged controller source",
+    "patch": "artifacts/labB/recovered_code_history/wrist_hold.patch"
+  },
+  {
+    "event": "world_z_twist",
+    "confirmed_by_local_time": "21:57:22.402661",
+    "added": 62,
+    "deleted": 0,
+    "net": 62,
+    "before_lines": 290,
+    "after_lines": 352,
+    "before_sha256": "4d0396a5742eae03a5d6bca3da61b5903e637dae299dc00f9899bcfd4cb55903",
+    "after_sha256": "5cc2059ac4a5642f24cfdf11c3efeb31486d55405f57555b4dd684b8b5f363d8",
+    "source": "Literal apply_patch operations in this conversation; reversed against unchanged controller source",
+    "patch": "artifacts/labB/recovered_code_history/world_z_twist.patch"
+  }
+]

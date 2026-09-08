@@ -1,0 +1,62 @@
+--- before.py
++++ after.py
+@@ -80,7 +80,7 @@
+     return before, state(rpc), peak.tolist()
+ 
+ 
+-def position_joint_delta(q, delta_xyz, max_joint_delta=0.18):
++def position_joint_delta(q, delta_xyz, max_joint_delta=0.18, hold_wrist=False):
+     """Linearized position-only IK for the physical right arm.
+ 
+     Joint 6 is held fixed because its absolute tracking on this installation is
+@@ -101,8 +101,9 @@
+     solver.init(q)
+     base = np.asarray(solver.forward_kinematics().translation(), float)
+     epsilon = 1e-4
+-    jacobian = np.empty((3, 5))
+-    for axis in range(5):
++    active_joints = 3 if hold_wrist else 5
++    jacobian = np.empty((3, active_joints))
++    for axis in range(active_joints):
+         perturbed = q.copy()
+         perturbed[axis] += epsilon
+         solver.update_configuration(perturbed)
+@@ -113,7 +114,7 @@
+     dq5 = jacobian.T @ np.linalg.solve(
+         jacobian @ jacobian.T + damping * np.eye(3), requested
+     )
+-    delta = np.r_[dq5, 0.0]
++    delta = np.r_[dq5, np.zeros(6 - active_joints)]
+     if np.max(np.abs(delta)) > max_joint_delta:
+         raise ValueError(
+             f"position probe needs {np.max(np.abs(delta)):.3f} rad joint delta; "
+@@ -158,9 +159,11 @@
+     plan_position = sub.add_parser("plan-position")
+     plan_position.add_argument("--delta-xyz", nargs=3, type=float, required=True)
+     plan_position.add_argument("--max-joint-delta", type=float, default=0.18)
++    plan_position.add_argument("--hold-wrist", action="store_true")
+     move_position = sub.add_parser("move-position")
+     move_position.add_argument("--delta-xyz", nargs=3, type=float, required=True)
+     move_position.add_argument("--max-joint-delta", type=float, default=0.18)
++    move_position.add_argument("--hold-wrist", action="store_true")
+     move_position.add_argument("--duration-s", type=float, default=4.0)
+     move_position.add_argument("--rate-hz", type=float, default=20.0)
+     move_position.add_argument("--torque-limits", nargs=6, type=float, default=DEFAULT_LIMIT_NM)
+@@ -204,7 +207,7 @@
+         elif args.command == "plan-position":
+             before = state(rpc)
+             delta, predicted, jacobian = position_joint_delta(
+-                before["q_rad"], args.delta_xyz, args.max_joint_delta
++                before["q_rad"], args.delta_xyz, args.max_joint_delta, args.hold_wrist
+             )
+             record.update(
+                 before=before,
+@@ -215,7 +218,7 @@
+         elif args.command == "move-position":
+             initial = state(rpc)
+             delta, predicted, jacobian = position_joint_delta(
+-                initial["q_rad"], args.delta_xyz, args.max_joint_delta
++                initial["q_rad"], args.delta_xyz, args.max_joint_delta, args.hold_wrist
+             )
+             before, after, peak = move_joints(
+                 rpc, delta, args.duration_s, args.rate_hz,

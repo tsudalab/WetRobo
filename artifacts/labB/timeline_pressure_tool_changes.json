@@ -1,0 +1,288 @@
+{
+  "images": [
+    {
+      "path": "artifacts/labB/current/2026-09-08/20260908T121117.585065Z_head_initial_head_1df57cc7/derived/head_rgb_landscape.png",
+      "label": "A  Start"
+    },
+    {
+      "path": "artifacts/labB/current/2026-09-08/20260908T121117.585065Z_head_initial_head_1df57cc7/derived/cap_detection.png",
+      "label": "B  Target label"
+    },
+    {
+      "path": "artifacts/labB/current/2026-09-08/device1_right_motion_overlay.png",
+      "label": "C  Motion mask"
+    },
+    {
+      "path": "artifacts/labB/current/2026-09-08/20260908T125923.932896Z_left_detached_check_orth_c57afcda/derived/head_rgb_landscape.png",
+      "label": "D  Cap grasp"
+    }
+  ],
+  "code_snapshot": [
+    {
+      "path": "robot/arm/arm.py",
+      "group": "Modified",
+      "physical_lines": 415
+    },
+    {
+      "path": "robot/arm/home.py",
+      "group": "Modified",
+      "physical_lines": 76
+    },
+    {
+      "path": "robot/cone_e.py",
+      "group": "Modified",
+      "physical_lines": 290
+    },
+    {
+      "path": "rollout/gripper_level.py",
+      "group": "Modified",
+      "physical_lines": 174
+    },
+    {
+      "path": "src/capture_record3d_bundle.py",
+      "group": "Modified",
+      "physical_lines": 696
+    },
+    {
+      "path": "tests/test_gripper_level.py",
+      "group": "Modified",
+      "physical_lines": 82
+    },
+    {
+      "path": "rollout/verify_right_home_level.py",
+      "group": "New",
+      "physical_lines": 38
+    },
+    {
+      "path": "src/detect_culture_bottle_cap.py",
+      "group": "New",
+      "physical_lines": 152
+    },
+    {
+      "path": "src/estimate_frame_motion.py",
+      "group": "New",
+      "physical_lines": 48
+    },
+    {
+      "path": "src/extract_labb_session_metrics.py",
+      "group": "New",
+      "physical_lines": 59
+    },
+    {
+      "path": "src/labb_right_cap_control.py",
+      "group": "New",
+      "physical_lines": 352
+    },
+    {
+      "path": "src/log_right_pressure.py",
+      "group": "New",
+      "physical_lines": 53
+    },
+    {
+      "path": "src/orient_record3d_frame.sh",
+      "group": "New",
+      "physical_lines": 19
+    },
+    {
+      "path": "src/sample_record3d_depth.py",
+      "group": "New",
+      "physical_lines": 78
+    },
+    {
+      "path": "tests/test_piper_native_gripper.py",
+      "group": "New",
+      "physical_lines": 92
+    }
+  ],
+  "code_count_scope": "Current HEAD diff and untracked Python/shell source, not a historical 22:00 snapshot",
+  "pressure_samples": 24509,
+  "end_jst": "2026-09-08T22:00:00+09:00",
+  "image_times_jst": [
+    "21:11:17.585065",
+    "21:11:17.585065",
+    "21:18:26.562516",
+    "21:59:23.932896"
+  ],
+  "motion_overlay_source": "current/2026-09-08/20260908T121826.562516Z_right_probe_y_plus20_device1_d278c714/derived/head_rgb_landscape.png",
+  "growth": {
+    "minutes": [
+      0.0,
+      1.5200500011444091,
+      2.6575166662534078,
+      3.927833334604899,
+      8.243366666634877,
+      28.060166664918263,
+      48.71666666666667
+    ],
+    "net_files": [
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      8
+    ],
+    "net_lines": [
+      522,
+      674,
+      693,
+      731,
+      779,
+      832,
+      832
+    ],
+    "first_use_events": [
+      {
+        "path": "src/labb_right_cap_control.py",
+        "physical_lines": 352,
+        "counted_at": "2026-09-08T21:11:04.005000+09:00",
+        "minutes": 0,
+        "kind": "first_execution",
+        "evidence": {
+          "utc": "2026-09-08T12:11:04.005Z",
+          "command": "python src/labb_right_cap_control.py state --note 'read-only preflight'"
+        }
+      },
+      {
+        "path": "src/sample_record3d_depth.py",
+        "physical_lines": 78,
+        "counted_at": "2026-09-08T21:10:49.318000+09:00",
+        "minutes": 0,
+        "kind": "first_review",
+        "evidence": {
+          "utc": "2026-09-08T12:10:49.318Z",
+          "command": "sed -n '1,260p' src/sample_record3d_depth.py"
+        }
+      },
+      {
+        "path": "tests/test_piper_native_gripper.py",
+        "physical_lines": 92,
+        "counted_at": "2026-09-08T21:10:37.890000+09:00",
+        "minutes": 0,
+        "kind": "first_review",
+        "evidence": {
+          "utc": "2026-09-08T12:10:37.890Z",
+          "command": "sed -n '1,150p' tests/test_piper_native_gripper.py"
+        }
+      },
+      {
+        "path": "src/detect_culture_bottle_cap.py",
+        "physical_lines": 152,
+        "counted_at": "2026-09-08T21:12:48.203000+09:00",
+        "minutes": 1.5200500011444091,
+        "kind": "first_execution",
+        "evidence": {
+          "utc": "2026-09-08T12:12:48.203Z",
+          "command": "python src/detect_culture_bottle_cap.py artifacts/labB/current/2026-09-08/20260908T121117.585065Z_head_initial_head_1df57cc7"
+        }
+      },
+      {
+        "path": "src/orient_record3d_frame.sh",
+        "physical_lines": 19,
+        "counted_at": "2026-09-08T21:13:56.451000+09:00",
+        "minutes": 2.6575166662534078,
+        "kind": "first_review",
+        "evidence": {
+          "utc": "2026-09-08T12:13:56.451Z",
+          "command": "sed -n '1,280p' src/orient_record3d_frame.sh"
+        }
+      },
+      {
+        "path": "rollout/verify_right_home_level.py",
+        "physical_lines": 38,
+        "counted_at": "2026-09-08T21:15:12.670000+09:00",
+        "minutes": 3.927833334604899,
+        "kind": "first_execution",
+        "evidence": {
+          "utc": "2026-09-08T12:15:12.670Z",
+          "command": "python rollout/verify_right_home_level.py"
+        }
+      },
+      {
+        "path": "src/estimate_frame_motion.py",
+        "physical_lines": 48,
+        "counted_at": "2026-09-08T21:19:31.602000+09:00",
+        "minutes": 8.243366666634877,
+        "kind": "first_execution",
+        "evidence": {
+          "utc": "2026-09-08T12:19:31.602Z",
+          "command": "python src/estimate_frame_motion.py artifacts/labB/current/2026-09-08/20260908T121746.275654Z_right_identify_device1_after_x_return_2ccc32bf/derived/head_rgb_landscape.png artifacts/labB/current/2026-09-08/20260908T121826.562516Z_right_probe_y_plus20_device1_d278c714/derived/head_rgb_landscape.png --roi 190 180 430 300"
+        }
+      },
+      {
+        "path": "src/log_right_pressure.py",
+        "physical_lines": 53,
+        "counted_at": "2026-09-08T21:39:20.610000+09:00",
+        "minutes": 28.060166664918263,
+        "kind": "first_execution",
+        "evidence": {
+          "utc": "2026-09-08T12:39:20.610Z",
+          "command": "python src/log_right_pressure.py --output artifacts/labB/right_pressure_remaining.jsonl --hz 20"
+        }
+      }
+    ],
+    "executed_files": [
+      1,
+      2,
+      2,
+      3,
+      4,
+      5,
+      5
+    ],
+    "executed_lines": [
+      352,
+      504,
+      504,
+      542,
+      590,
+      643,
+      643
+    ],
+    "recovered_patches": [
+      {
+        "event": "wrist_hold",
+        "confirmed_by_local_time": "21:53:03.230742",
+        "added": 9,
+        "deleted": 6,
+        "net": 3,
+        "before_lines": 287,
+        "after_lines": 290,
+        "before_sha256": "8c57c44277167533dcb3317701847d78ca0549bb688aa49c8b252760e4d011e9",
+        "after_sha256": "4d0396a5742eae03a5d6bca3da61b5903e637dae299dc00f9899bcfd4cb55903",
+        "source": "Literal apply_patch operations in this conversation; reversed against unchanged controller source",
+        "patch": "artifacts/labB/recovered_code_history/wrist_hold.patch"
+      },
+      {
+        "event": "world_z_twist",
+        "confirmed_by_local_time": "21:57:22.402661",
+        "added": 62,
+        "deleted": 0,
+        "net": 62,
+        "before_lines": 290,
+        "after_lines": 352,
+        "before_sha256": "4d0396a5742eae03a5d6bca3da61b5903e637dae299dc00f9899bcfd4cb55903",
+        "after_sha256": "5cc2059ac4a5642f24cfdf11c3efeb31486d55405f57555b4dd684b8b5f363d8",
+        "source": "Literal apply_patch operations in this conversation; reversed against unchanged controller source",
+        "patch": "artifacts/labB/recovered_code_history/world_z_twist.patch"
+      }
+    ],
+    "method": "Current file sizes counted at first logged execution. Review-only files excluded from plotted curves. Only actual pre-window events clipped to start. No patch double counting."
+  },
+  "tokens": {
+    "source": "/home/admin/.codex/sessions/2026/09/08/rollout-2026-09-08T21-10-07-01a080ec-f2af-7ee2-a641-57e02e0aeaeb.jsonl",
+    "last": {
+      "utc": "2026-09-08T12:59:29.608Z",
+      "input_tokens": 23474834,
+      "cached_input_tokens": 23139456,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 80757,
+      "reasoning_output_tokens": 30874,
+      "total_tokens": 23555591
+    },
+    "definition": "Session cumulative input plus output, including cached input; reasoning is included in output, not added again."
+  },
+  "caveat": "Final image is 37 seconds before cutoff. Cap grasp does not imply cap removal.",
+  "output": "/home/admin/src/google/wetrobo-labB/artifacts/labB/timeline_pressure_tool_changes.png"
+}

@@ -1,0 +1,106 @@
+{
+  "camera_pose": {
+    "frame": "record3d_session_local",
+    "quaternion_xyzw": [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ],
+    "translation_xyz_m": [
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "confidence_dtype": "uint8",
+  "confidence_shape": [
+    0,
+    0
+  ],
+  "confidence_values": {
+    "0": "low",
+    "1": "medium",
+    "2": "high"
+  },
+  "depth_dtype": "float32",
+  "depth_invalid": "non-finite or <= 0",
+  "depth_shape": [
+    640,
+    480
+  ],
+  "depth_unit": "m",
+  "host_callback_monotonic_ns": 1737484609583019,
+  "host_callback_realtime_ns": 1788872654662282685,
+  "host_copy_end_monotonic_ns": 1737484610781221,
+  "host_copy_end_realtime_ns": 1788872654663481292,
+  "intrinsics": {
+    "K_raw_rgb": [
+      [
+        437.8232116699219,
+        0.0,
+        239.74191284179688
+      ],
+      [
+        0.0,
+        437.8232116699219,
+        320.7168273925781
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "K_rgb_rotated_clockwise": [
+      [
+        437.8232116699219,
+        0.0,
+        318.2831726074219
+      ],
+      [
+        0.0,
+        437.8232116699219,
+        239.74191284179688
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "coefficients": {
+      "fx": 437.8232116699219,
+      "fy": 437.8232116699219,
+      "tx": 239.74191284179688,
+      "ty": 320.7168273925781
+    }
+  },
+  "quality": {
+    "confidence_high_fraction": null,
+    "depth_median_m": 0.858875036239624,
+    "depth_valid_fraction": 0.8740201822916667,
+    "rgb_mean_gray": 120.07889973958333,
+    "rgb_near_black_fraction": 0.012835286458333333,
+    "rgb_sharpness_laplacian_var": 552.1146650290489
+  },
+  "record3d_misc": {
+    "bytes": 102,
+    "json": {
+      "metadata": {
+        "relativeTimestamp": 15810710.537303625,
+        "unixTimestampOnReceivedFrame": 1788872498.769288
+      }
+    },
+    "sha256": "f07288756470d1e113565c4f7857225930182fbad8fe480ceb1af991e08cb0af",
+    "utf8": "{\"metadata\":{\"relativeTimestamp\":15810710.537303625,\"unixTimestampOnReceivedFrame\":1788872498.769288}}"
+  },
+  "rgb_color_space": "RGB",
+  "rgb_dtype": "uint8",
+  "rgb_shape": [
+    640,
+    480,
+    3
+  ],
+  "sequence": 0
+}
