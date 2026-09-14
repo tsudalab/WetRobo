@@ -414,7 +414,7 @@ results are not over-claimed.
 
 This branch is a byte-exact snapshot of the working repository at one point of
 the trials, kept so the task programs of that point can be run as they were.
-Only `SKILLS.md` (the WetRobo skill from `main`) is added; nothing else differs
+Only `AGENTS.md` (the WetRobo skill from `main`) is added; nothing else differs
 from the source commit. Branches form a chain, so `git diff` between adjacent
 branches shows what one trial added.
 
