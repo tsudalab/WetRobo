@@ -7,7 +7,7 @@ The environment is four components:
 
 | component | where |
 |---|---|
-| Skill | `SKILLS.md` — operating rules and the starting workflow for the agent |
+| Skill | `AGENTS.md` — operating rules and the starting workflow for the agent |
 | Code exemplar | branch `wetrobo+petri+cap+door` — the repository after a coding agent evolved it in this environment through three trials (Petri dish lid, culture-media bottle cap, incubator door) |
 | Arm | one AgileX Piper arm with a string-driven Dynamixel gripper, a fixed head RGB-D camera (iPhone via Record3D), and a wrist RGB camera |
 | Incubator | a laboratory incubator in front of the arm |
@@ -29,8 +29,8 @@ The task is not part of the environment; the operator gives it at run time.
 ## Provenance
 
 All branches are extracted from the working repository's git history; no file
-was edited by hand except `SKILLS.md`, `README.md`, and `.gitignore` on `main`.
-The snapshot branches add `SKILLS.md` and a note at the end of `README.md`;
+was edited by hand except `AGENTS.md`, `README.md`, and `.gitignore` on `main`.
+The snapshot branches add `AGENTS.md` and a note at the end of `README.md`;
 every other file is identical to the source commit.
 
 - `main`: the tree at commit `d8a618d` (2026-07-21, "Add safe one-demo replay
