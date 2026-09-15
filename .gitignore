@@ -20,3 +20,7 @@ tmp/
 archive/
 slurm-*.out
 pipette/
+
+# demonstrations shipped with the kit
+!demo/**/*.hdf5
+!demo/**/*.mp4
