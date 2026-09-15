@@ -11,8 +11,23 @@ The environment is four components:
 | Code exemplar | branch `wetrobo+petri+cap+door` — the repository after a coding agent evolved it in this environment through three trials (Petri dish lid, culture-media bottle cap, incubator door) |
 | Arm | one AgileX Piper arm with a string-driven Dynamixel gripper, a fixed head RGB-D camera (iPhone via Record3D), and a wrist RGB camera |
 | Incubator | a laboratory incubator in front of the arm |
+| Demonstrations | `demo/` — fifteen teleoperated demonstrations per task |
 
 The task is not part of the environment; the operator gives it at run time.
+
+## Demonstrations
+
+`demo/` holds fifteen teleoperated demonstrations per task, recorded on this
+equipment with a Meta Quest interface:
+
+```
+demo/petri_lid/        lifting the Petri dish lid
+demo/bottle_cap/       lifting the bottle cap
+demo/incubator_door/   opening the incubator door
+```
+
+Each episode is one `*.hdf5` trajectory plus a head-camera preview
+`*_head.mp4`. See `demo/README.md` for the datasets and a replay command.
 
 ## Branches
 
