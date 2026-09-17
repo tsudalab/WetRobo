@@ -24,3 +24,4 @@ pipette/
 # demonstrations shipped with the kit
 !demo/**/*.hdf5
 !demo/**/*.mp4
+!media/wetrobo.mp4

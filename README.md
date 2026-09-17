@@ -1,5 +1,7 @@
 # WetRobo
 
+https://github.com/tsudalab/WetRobo/raw/main/media/wetrobo.mp4
+
 A reproducible environment for policy self-improvement towards automated
 biological research.
 
