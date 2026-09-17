@@ -41,27 +41,6 @@ Each episode is one `*.hdf5` trajectory plus a head-camera preview
   added. `wetrobo+petri+cap+door` is the code exemplar: the final form of the
   three task programs at the paths where they run.
 
-## Provenance
-
-All branches are extracted from the working repository's git history; no file
-was edited by hand except `AGENTS.md`, `README.md`, and `.gitignore` on `main`.
-The snapshot branches add `AGENTS.md` and a note at the end of `README.md`;
-every other file is identical to the source commit.
-
-- `main`: the tree at commit `d8a618d` (2026-07-21, "Add safe one-demo replay
-  workflow"), the state the first trial started from, restricted to the control
-  stack and its imports. Neural-policy inference and training scripts, unused
-  simulation assets, and scratch files are omitted.
-- `wetrobo+petri`: the tree at commit `3a1706b` (2026-08-06 11:03 JST, "Add
-  checkpointed thin-object grasp orchestration"), the last commit before the
-  bottle cap trial began.
-- `wetrobo+petri+cap`: the tree at commit `1f07761` (2026-08-06 18:37 JST,
-  "Promote verified cylindrical cap transfer").
-- `wetrobo+petri+cap+door`: the tree at commit `676981b` (2026-08-08 23:45 JST,
-  "Add cross-lab appliance frame retargeting"). The incubator door files are
-  those of commit `283b913` (the revision measured in the paper) plus this one
-  later commit, which adds cross-laboratory appliance-frame registration.
-
 ## Dependencies
 
 Declared in `pyproject.toml`. In addition, the code imports:
@@ -74,7 +53,3 @@ Declared in `pyproject.toml`. In addition, the code imports:
 `robot/cone-e-description/` describe one installation; measure your own before
 commanding motion.
 
-## Not to be confused with
-
-A simulation package also named `wetrobo/` exists inside the working repository
-this was extracted from. It is unrelated to this environment.
