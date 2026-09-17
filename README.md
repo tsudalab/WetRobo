@@ -1,6 +1,8 @@
 # WetRobo
 
-https://github.com/tsudalab/WetRobo/raw/main/media/wetrobo.mp4
+![WetRobo: incubator door, Petri dish lid, and bottle cap trials](media/wetrobo.gif)
+
+[Full-resolution video (mp4)](media/wetrobo.mp4)
 
 A reproducible environment for policy self-improvement towards automated
 biological research.
