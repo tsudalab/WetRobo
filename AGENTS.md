@@ -118,6 +118,50 @@ Assumptions the baseline relies on; measure them for your setup:
 Abort and revert (`git checkout -- <file>`) if the arm drifts during replay,
 the clamp fires in normal motion, or safety rejects repeatedly.
 
+## Commanding the arm directly
+
+The replay path above hides these; a task program that drives the arm itself has to
+handle them, and each one has been mistaken for a hardware fault at least once.
+
+- **After the RPC server restarts, the arm ignores commands until MIT mode is
+  reasserted and the gains are raised.** The default gains are holding gains, too soft
+  to move anything, and the driver accepts commands it then does not execute. Bring up
+  in this order: hold the *measured* pose, set holding gains, reassert MIT mode (raw CAN
+  frame, id `0x151`, payload `010400AD00000000`, on that arm's CAN interface), ramp the
+  gains to motion gains in a few steps while re-holding the measured pose, reassert MIT
+  mode again. Expect the arm to sag slightly while the server is down.
+- **One setpoint is not a motion.** `set_*_joint_target(q, preview_time=t)` says "be at
+  `q` in `t` seconds"; sending it once and waiting produces a fraction of the travel.
+  Stream the trajectory at ~30 Hz along a minimum-jerk profile and watch tracking error
+  and torque every step.
+- **The arm undershoots, by an amount that depends on direction and pose** — measured
+  between 30% and 100% of the commanded displacement. Do not trust one command to land:
+  after a streamed move, measure the residual and command it again, two or three passes,
+  until it is inside the tolerance the *task* needs. Millimetre-level endpoint accuracy
+  is not available; judge the last few millimetres from the wrist camera instead.
+- **Take torque limits from the arm, not from a baseline.** Static gravity load changes
+  with pose, so a threshold derived from torques measured in one pose fires immediately
+  in another. Use the arm's own limits with a three-strike rule, and treat a trip as a
+  stop, never as a number to raise.
+- **Open the jaws fully before a descent and confirm the measured opening.** A grasp
+  commanded from a partly open jaw closes on nothing, and the failure looks like a
+  positioning error.
+- **Check the measured joint angles against the model's limits before planning.** A
+  joint can sit outside the MJCF range after manual handling, and IK will happily plan
+  from there.
+- **The URDF must not carry the arm's mounting rotation** — the mount belongs to the
+  MJCF, and the URDF is what the controller uses for gravity compensation. If the
+  descriptions are missing, restore the real ones; a hand-written stand-in with the
+  mount folded in makes every pose and every gravity term wrong, and the arm drifts
+  sideways while every log still looks self-consistent.
+
+## Where the time actually goes
+
+Measured on a real task: each streamed move takes about three seconds, while a phase of
+the task takes one to four minutes. Almost all of it is the agent looking, measuring and
+deciding between moves. If you are trying to make a task faster, time the deliberation
+separately from the actuation — the actuation is rarely the bottleneck.
+
 ## Operating rules
 
 - Lab work is not in a hurry. Stop at the point that matters — where the
