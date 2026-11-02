@@ -57,3 +57,8 @@ Declared in `pyproject.toml`. In addition, the code imports:
 `robot/cone-e-description/` describe one installation; measure your own before
 commanding motion.
 
+## Additional Datasets
+
+Additional demonstration data (3,000+ trajectories) collected during our study is available on Hugging Face:
+
+- [Playingyoyo/wetrobo-related](https://huggingface.co/datasets/Playingyoyo/wetrobo-related) *(Note: These demonstrations were not directly used in WetRobo).*
